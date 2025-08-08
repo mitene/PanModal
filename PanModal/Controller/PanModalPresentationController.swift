@@ -848,16 +848,9 @@ private extension PanModalPresentationController {
                                 byRoundingCorners: [.topLeft, .topRight],
                                 cornerRadii: CGSize(width: radius, height: radius))
 
-        if #available(iOS 11.0, *) {
-            view.layer.cornerRadius = radius
-            view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-            view.layer.masksToBounds = true
-        } else {
-            // Set path as a mask to display optional drag indicator view & rounded corners
-            let mask = CAShapeLayer()
-            mask.path = path.cgPath
-            view.layer.mask = mask
-        }
+        view.layer.cornerRadius = radius
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        view.layer.masksToBounds = true
 
         // Draw around the drag indicator view, if displayed
         if presentable?.showDragIndicator == true {
