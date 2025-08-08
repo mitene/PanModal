@@ -848,15 +848,15 @@ private extension PanModalPresentationController {
                                 byRoundingCorners: [.topLeft, .topRight],
                                 cornerRadii: CGSize(width: radius, height: radius))
 
-        view.layer.cornerRadius = radius
-        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        view.layer.masksToBounds = true
-
         // Draw around the drag indicator view, if displayed
         if presentable?.showDragIndicator == true {
             let indicatorLeftEdgeXPos = view.bounds.width/2.0 - Constants.dragIndicatorSize.width/2.0
             drawAroundDragIndicator(currentPath: path, indicatorLeftEdgeXPos: indicatorLeftEdgeXPos)
         }
+
+        view.layer.cornerRadius = radius
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        view.layer.masksToBounds = true
 
         // Improve performance by rasterizing the layer
         view.layer.shouldRasterize = true
