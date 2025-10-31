@@ -173,9 +173,11 @@ open class PanModalPresentationController: UIPresentationController {
     }
 
     override public func presentationTransitionWillBegin() {
+        guard let containerView = containerView else { return }
 
-        guard let containerView = containerView
-            else { return }
+        if self.panContainerView.frame == .zero {
+            self.adjustPresentedViewFrame()
+        }
 
         layoutBackgroundView(in: containerView)
         layoutPresentedView(in: containerView)
@@ -841,7 +843,6 @@ private extension PanModalPresentationController {
      We have to set a custom path for corner rounding
      because we render the dragIndicator outside of view bounds
      */
-    // NOTE: https://github.com/slackhq/PanModal/issues/216#issuecomment-3007596819
     func addRoundedCorners(to view: UIView) {
         let radius = presentable?.cornerRadius ?? 0
         let path = UIBezierPath(roundedRect: view.bounds,
@@ -854,24 +855,14 @@ private extension PanModalPresentationController {
             drawAroundDragIndicator(currentPath: path, indicatorLeftEdgeXPos: indicatorLeftEdgeXPos)
         }
 
-        view.layer.cornerRadius = radius
-        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        view.layer.masksToBounds = true
+        // Set path as a mask to display optional drag indicator view & rounded corners
+        let mask = CAShapeLayer()
+        mask.path = path.cgPath
+        view.layer.mask = mask
 
         // Improve performance by rasterizing the layer
         view.layer.shouldRasterize = true
         view.layer.rasterizationScale = UIScreen.main.scale
-
-        if #available(iOS 26.0, *) {
-            let subviews = view.subviews
-            view.subviews.forEach { $0.removeFromSuperview() }
-            subviews.forEach { view.addSubview($0) }
-
-            DispatchQueue.main.async {
-                view.layer.cornerRadius = radius
-                view.layer.masksToBounds = true
-            }
-        }
     }
 
     /**
